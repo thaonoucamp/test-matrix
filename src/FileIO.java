@@ -11,7 +11,7 @@ public class FileIO {
     final String SAY_YES = " ------------>It is the Matrix!";
     String SAY_NO = " ------------>It isn't the Matrix because whose ";
     String REGEX_NUMBER = "^[0-9]*$";
-    String resultString="";
+    String resultString = "";
 
     // Check index have to number && not null;
     public boolean matches(String regex, String index) {
@@ -60,10 +60,30 @@ public class FileIO {
         return false;
     }
 
+    public void writer(List<List<String>> list, String note) throws IOException {
+        FileWriter fileWriter = new FileWriter("/Applications/FileIO/src/output.txt",true);
+        try {
+            for (List<String> str : list) {
+                for (String string : str) {
+                    string += " ";
+                    fileWriter.write(string);
+                }
+                fileWriter.write("\n");
+            }
+            fileWriter.write(note);
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        } finally {
+            fileWriter.close();
+        }
+    }
+
     public static void main(String[] args) throws IOException {
         FileIO fileIO = new FileIO();
         List<List<String>> list = new ArrayList<>();
+        List<List<List<String>>> totalList = new ArrayList<>();
         int count = 1;
+        String note = "";
 
         for (String line : Files.readAllLines(Paths.get(fileIO.FILE_PATH))) {
 //            System.out.println(line);
@@ -84,11 +104,17 @@ public class FileIO {
                     if (fileIO.checkLengthOfLine(list)) {
                         if (!fileIO.checkCharInLine(list, fileIO.REGEX_NUMBER)) {
                             System.out.println(count + fileIO.SAY_YES + "\n");
+                            note = "\n" + count + fileIO.SAY_YES + "\n";
+                            fileIO.writer(list, note);
                         } else {
                             System.out.println(count + fileIO.SAY_NO + fileIO.resultString + "\n");
+                            note = "\n" + count + fileIO.SAY_NO + fileIO.resultString + "\n";
+                            fileIO.writer(list, note);
                         }
                     } else {
                         System.out.println(count + fileIO.SAY_NO + fileIO.ROWS_SIZE + "\n");
+                        note = "\n" + count + fileIO.SAY_NO + fileIO.ROWS_SIZE + "\n";
+                        fileIO.writer(list, note);
                     }
                     list.removeAll(list);
                     count++;
